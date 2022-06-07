@@ -1,7 +1,10 @@
 namespace Age // Form1.cs
 {
-    public partial class Form1 : Form
+    public partial class Form1:Form
     {
+        #pragma warning disable CA2211
+        #pragma warning disable CS8618
+        #pragma warning disable IDE1006
         public static Form1 instance;
         public DateTime start;
         //public bool opened=false;
@@ -19,7 +22,7 @@ namespace Age // Form1.cs
         {
             if(Output.Text.Length>0)Clipboard.SetText(Output.Text);
         }
-        private void timer1_Tick(object sender,EventArgs e)
+        public void timer1_Tick(object sender,EventArgs e)
         {
             decimal completedYears=0,divide,elapsedSeconds=0;
             DateTime destination=DateTime.Now; // make it to work
@@ -88,7 +91,7 @@ namespace Age // Form1.cs
         /// <param name="second">...and second</param>
         /// <param name="isLeap">Whether we should consider February as 28 or 29 days</param>
         /// <returns>Amount of seconds</returns>
-        private uint goToMonthEnd(int month,int day,int hour, int minute,int second,bool isLeap)
+        private static uint goToMonthEnd(int month,int day,int hour, int minute,int second,bool isLeap)
         {
             uint result=0,maxReach;
             if(month==1||month==3||month==5||month==7||month==8||month==10||month==12)maxReach=31;
@@ -100,7 +103,7 @@ namespace Age // Form1.cs
             result+=Convert.ToUInt32((60-second+60*(59-minute)+3600*(23-hour)));
             return result;
         }
-        private uint goToYearEnd(int month,int day,int hour,int minute,int second,bool isLeap)
+        private static uint goToYearEnd(int month,int day,int hour,int minute,int second,bool isLeap)
         {
             uint result=0;
             result+=goToMonthEnd(month,day,hour,minute,second,isLeap);
