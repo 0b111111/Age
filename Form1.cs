@@ -22,23 +22,61 @@ namespace Age // Form1.cs
         private void timer1_Tick(object sender,EventArgs e)
         {
             decimal completedYears=0,divide,elapsedSeconds=0;
-            DateTime destination=DateTime.Now;
+            DateTime destination=DateTime.Now; // make it to work
+            //DateTime destination=new(2022,6,7,13,17,5); // for testing purposes, to be deleted
+            
             int startMonth=start.Month,startDay=start.Day,startHour=start.Hour,startMinute=start.Minute,startSecond=start.Second;
-            if(destination.Month>startMonth||(destination.Month==startMonth&&(destination.Day>startDay||destination.Day==startDay&&(destination.Hour>start.Hour||(destination.Hour==start.Hour&&destination.Minute>start.Minute||destination.Second>start.Second)))))
+            if(destination.Month>startMonth||destination.Month==startMonth&&(destination.Day>startDay||destination.Day==startDay&&(destination.Hour>start.Hour||destination.Hour==start.Hour&&(destination.Minute>start.Minute||destination.Second>start.Second)))) // I am after a birthday already in this year
             {
                 completedYears+=destination.Year-start.Year;
-                elapsedSeconds+=goToMonthEnd(startMonth++,startDay,startHour,startMinute,startSecond,DateTime.IsLeapYear(destination.Year));
-                while(start.Month<destination.Month)elapsedSeconds+=goToMonthEnd(startMonth++,1,0,0,0,DateTime.IsLeapYear(destination.Year));
+                if(startMonth==destination.Month)
+                {
+                    elapsedSeconds=86400*(destination.Day-start.Day);
+                    if(destination.Hour<start.Hour)
+                    {
+                        elapsedSeconds-=86400;
+                        elapsedSeconds+=3600*(destination.Hour+24-start.Hour);
+                    }
+                    else elapsedSeconds+=3600*(destination.Hour-start.Hour);
+                    if(destination.Minute<start.Minute)
+                    {
+                        elapsedSeconds-=3600;
+                        elapsedSeconds+=60*(destination.Minute+60-start.Minute);
+                    }
+                    else elapsedSeconds+=60*(destination.Minute-start.Minute);
+                    elapsedSeconds+=destination.Second-start.Second;
+                }
+                else
+                {
+                    elapsedSeconds+=goToMonthEnd(startMonth++,startDay,startHour,startMinute,startSecond,DateTime.IsLeapYear(destination.Year));
+                    while(start.Month<destination.Month)elapsedSeconds+=goToMonthEnd(startMonth++,1,0,0,0,DateTime.IsLeapYear(destination.Year));
+                    elapsedSeconds+=86400*(destination.Day-start.Day);
+                    if(destination.Hour<start.Hour)
+                    {
+                        elapsedSeconds-=86400;
+                        elapsedSeconds+=3600*(destination.Hour+24-start.Hour);
+                    }
+                    else elapsedSeconds+=3600*(destination.Hour-start.Hour);
+                    if(destination.Minute<start.Minute)
+                    {
+                        elapsedSeconds-=3600;
+                        elapsedSeconds+=60*(destination.Minute+60-start.Minute);
+                    }
+                    else elapsedSeconds+=60*(destination.Minute-start.Minute);
+                    elapsedSeconds+=destination.Second-start.Second;
+                }
             }
-            else 
+            else // I had birthday in previous year, next birthday this year ahead of me
             {
+                Int32 destinationMonth=1;
                 completedYears+=destination.Year-1-start.Year;
                 elapsedSeconds+=goToYearEnd(startMonth,startDay,startHour,startMinute,startSecond,DateTime.IsLeapYear(destination.Year-1));
+                while(destinationMonth<destination.Month)elapsedSeconds+=goToMonthEnd(destinationMonth++,1,0,0,0,DateTime.IsLeapYear(destination.Year));
+                elapsedSeconds+=86400*(destination.Day-1)+3600*destination.Hour+60*destination.Minute+destination.Second;
             }
-            elapsedSeconds+=(uint)destination.Day*86400;
-            if((DateTime.IsLeapYear(destination.Year)&&(destination.Month>2||destination.Month==2&&destination.Day==29))||(DateTime.IsLeapYear(destination.Year-1)&&destination.Month<=2))divide=31622400;
+            if((DateTime.IsLeapYear(destination.Year)&&destination.Month>2||(destination.Month==2&&destination.Day==29))||(DateTime.IsLeapYear(destination.Year-1)&&destination.Month<=2))divide=31622400;
             else divide=31536000;
-            Output.Text=(elapsedSeconds/divide+completedYears).ToString();
+            Output.Text=Convert.ToString(Math.Round(elapsedSeconds/divide+completedYears,7));
         }
         /// <summary>
         /// Returns seconds to the end of a month
@@ -48,7 +86,7 @@ namespace Age // Form1.cs
         /// <param name="hour">From which hour</param>
         /// <param name="minute">and minute</param>
         /// <param name="second">...and second</param>
-        /// <param name="isLeap">If we should consider February as 28 or 29 days</param>
+        /// <param name="isLeap">Whether we should consider February as 28 or 29 days</param>
         /// <returns>Amount of seconds</returns>
         private uint goToMonthEnd(int month,int day,int hour, int minute,int second,bool isLeap)
         {
@@ -67,7 +105,7 @@ namespace Age // Form1.cs
             uint result=0;
             result+=goToMonthEnd(month,day,hour,minute,second,isLeap);
             while(month<12)result+=goToMonthEnd(++month,1,0,0,0,isLeap);
-            label1.Text=Convert.ToString(result); // DEBUG
+            //label1.Text=Convert.ToString(result); // DEBUG
             return result;
         }
     }

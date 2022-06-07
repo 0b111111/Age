@@ -18,6 +18,7 @@ namespace Age // Settings.cs
         {
             InitializeComponent();
             Form1.instance.Settings.Enabled=false;
+            if(Form1.instance.start!=null)Input.Text=Convert.ToString(year)+"-"+Convert.ToString(month)+"-"+Convert.ToString(day)+" "+Convert.ToString(hour)+":"+Convert.ToString(minute)+":"+Convert.ToString(second);
         }
 
         private void Settings_IsEnter(object sender, KeyEventArgs e)
